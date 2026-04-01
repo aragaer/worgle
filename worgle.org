@@ -45,6 +45,7 @@ public and private.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #ifndef WORGLITE
 #include <sqlite3.h>
 #endif
@@ -377,7 +378,7 @@ here to make sure that colon isn't forgotten.
 #+NAME: find_next_named_block
 #+BEGIN_SRC c
 if(read >= 7) {
-    if(!strncmp(line, "#+NAME", 6)) {
+    if(!strncasecmp(line, "#+NAME", 6)) {
 #ifndef WORGLITE
         if (generate_db) {
             <<append_content_before_code>>
@@ -836,7 +837,7 @@ one of two things happen: a code reference is found, or the
 #+NAME: parse_mode_code
 #+BEGIN_SRC c
 if(read >= 9) {
-    if(!strncmp(line, "#+END_SRC", 9)) {
+    if(!strncasecmp(line, "#+END_SRC", 9)) {
         mode = MODE_ORG;
         worg->block_started = 0;
         worgle_append_string(worg);

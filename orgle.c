@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 enum {
 MODE_ORG,
@@ -642,7 +643,7 @@ int main(int argc, char *argv[])
         if(!status) break;
         if(mode == MODE_ORG) {
             if(read >= 7) {
-                if(!strncmp(line, "#+NAME:",7)) {
+                if(!strncasecmp(line, "#+NAME:",7)) {
                     mode = MODE_BEGINCODE;
                     parse_name(line, read, &str);
                     orgle_begin_block(&org, &str);
@@ -650,7 +651,7 @@ int main(int argc, char *argv[])
             }
         } else if(mode == MODE_CODE) {
             if(read >= 9) {
-                if(!strncmp(line, "#+END_SRC", 9)) {
+                if(!strncasecmp(line, "#+END_SRC", 9)) {
                     mode = MODE_ORG;
                     org.block_started = 0;
                     orgle_append_string(&org);
@@ -675,7 +676,7 @@ int main(int argc, char *argv[])
             }
         } else if (mode == MODE_BEGINCODE) {
             if(read >= 11) {
-                if(!strncmp(line, "#+BEGIN_SRC",11)) {
+                if(!strncasecmp(line, "#+BEGIN_SRC",11)) {
                     mode = MODE_CODE;
                     org.block_started = 1;
                     orgle_string_reset(&org.block);
