@@ -115,7 +115,7 @@ worgle_d worg;
 worgle_init(&worg);
 #+END_SRC
 *** Get and set filename
-The file name is currently aqcuired from the command line, so the
+The file name is currently acquired from the command line, so the
 program must check and make sure that there are the right number of
 arguments. If there isn't, return an error.
 
