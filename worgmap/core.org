@@ -692,7 +692,7 @@ int wmp_lookup_block(wmp_core *c,
         b->head_segment = sqlite3_column_int(stmt, 1);
         nbytes = strlen(name);
         b->name = calloc(1, nbytes + 1);
-        strncpy(b->name, name, nbytes);
+        memcpy(b->name, name, nbytes);
         b->prog = prog;
         b->nblocks = sqlite3_column_int(stmt, 2);
         b->nsegs = sqlite3_column_int(stmt, 3);
@@ -864,7 +864,7 @@ int wmp_lookup_file(wmp_core *c,
         f->next_file = sqlite3_column_int(stmt, 1);
         nbytes = strlen(filename);
         f->filename = calloc(1, nbytes + 1);
-        strncpy(f->filename, filename, nbytes);
+        memcpy(f->filename, filename, nbytes);
         f->top = sqlite3_column_int(stmt, 2);
         f->prog = sqlite3_column_int(stmt, 3);
     } else {
