@@ -360,6 +360,7 @@ if (generate_db) {
 }
 #endif
 <<find_next_named_block>>
+<<find_next_unnamed_block>>
 #ifndef WORGLITE
 if (generate_db) {
     <<parse_content>>
@@ -670,6 +671,16 @@ should happen when a new block begins. Probably in
 #+BEGIN_SRC c
 worgle_orgfile_append_reference(worg, worg->curblock);
 #+END_SRC
+***** Unnamed block
+It is possible a block has no explicit name specified.
+#+NAME: find_next_unnamed_block
+#+BEGIN_SRC c
+if (
+    <<begin_src_check>>
+    ) {
+  <<begin_src_found>>
+}
+#+END_SRC
 **** MODE_BEGINCODE
 #+NAME:parse_modes
 #+BEGIN_SRC c
@@ -682,15 +693,14 @@ syntax error. If it does, it goes on to extract a potential
 new filename to tangle, which then gets appended to the
 Worgle file list.
 
+
 #+NAME: parse_mode_begincode
 #+BEGIN_SRC c
 if (read >= 11) {
-    if(!strncmp (line, "#+BEGIN_SRC",11)) {
-        <<begin_the_code>>
-        if (parse_begin(line, read, &str) == 2) {
-            worgle_append_file(worg, &str);
-        }
-        continue;
+    if(
+       <<begin_src_check>>
+       ) {
+        <<begin_src_found>>
     } else {
         fwrite(line, read, 1, stderr);
         fprintf(stderr,
@@ -704,6 +714,20 @@ fprintf(stderr,
         "line %lu: Expected #+BEGIN_SRC\n",
         worg->linum);
 rc = 1;
+#+END_SRC
+***** Condition to check the beginning of a source block
+#+NAME: begin_src_check
+#+BEGIN_SRC c
+read >= 11 && !strncasecmp(line, "#+BEGIN_SRC",11)
+#+END_SRC
+***** Process the source block declaration
+#+NAME: begin_src_found
+#+BEGIN_SRC c
+<<begin_the_code>>
+if (parse_begin(line, read, &str) == 2) {
+    worgle_append_file(worg, &str);
+}
+continue;
 #+END_SRC
 ***** Extracting information from #+BEGIN_SRC
 
@@ -794,6 +818,17 @@ static int parse_begin(char *line, size_t len, worgle_string *str)
 
     return rc;
 }
+#+END_SRC
+***** Starting an anonymous block
+If block has no explicit name, start a new anonymous block.
+#+NAME: begin_the_code
+#+BEGIN_SRC c
+if(!worg->curblock) worgle_begin_block(worg, &anonymous);
+#+END_SRC
+
+#+NAME: global_variables
+#+BEGIN_SRC c
+struct worgle_string anonymous = {"",0};
 #+END_SRC
 ***** Setting up code for a new read
 When a new codeblock has indeed been found, the mode is switched to =MODE_CODE=,
